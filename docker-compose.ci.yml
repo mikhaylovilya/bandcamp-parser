@@ -1,0 +1,14 @@
+services:
+  backend-test:
+    build: ./backend
+    command: python -m pytest -q
+    environment:
+      - DATABASE_URL=sqlite:////tmp/test.db
+      - TESTING=true
+
+  frontend-test:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    command: sh -c "npm ci && npx vitest run"

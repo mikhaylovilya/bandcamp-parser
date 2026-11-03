@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build images
+        run: docker compose -f docker-compose.ci.yml build
+
+      - name: Backend tests
+        run: docker compose -f docker-compose.ci.yml run --rm backend-test
+
+      - name: Frontend tests
+        run: docker compose -f docker-compose.ci.yml run --rm frontend-test
+
+      - name: Smoke test (full stack)
+        run: |
+          docker compose up -d --build
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:5000/api/health >/dev/null; then break; fi
+            sleep 2
+          done
+          curl -sf http://localhost:5000/api/health
+          curl -sf http://localhost:8080/ >/dev/null
+          docker compose down -v
+PY
