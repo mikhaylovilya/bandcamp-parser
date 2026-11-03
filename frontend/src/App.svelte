@@ -93,6 +93,11 @@
 
   {#if release}
     <section class="card">
+      {#if release.cover_image_url}
+        <div class="cover">
+          <img src={release.cover_image_url} alt={release.title} />
+        </div>
+      {/if}
       <h2>{release.title}</h2>
       <p class="artist">{release.artist}</p>
       <p class="meta">{release.type} · {release.release_date || '—'} · {release.price != null ? release.price + ' ' + (release.currency || '') : '—'}</p>
@@ -104,9 +109,6 @@
       {/if}
       {#if release.lyrics}
         <pre class="lyrics">{release.lyrics}</pre>
-      {/if}
-      {#if release.cover_image_url}
-        <img src={release.cover_image_url} alt={release.title} />
       {/if}
       {#if release.tracks && release.tracks.length}
         <ol class="tracks">
@@ -167,7 +169,8 @@
   .input { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
   .input input { flex: 1 1 260px; }
   .card { background: var(--surface); border: 1px solid var(--border); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; box-shadow: var(--shadow); }
-  .card img { max-width: 200px; border-radius: 8px; margin: 0.5rem 0; }
+  .cover { text-align: center; margin-bottom: 0.75rem; }
+  .cover img { max-width: 220px; border-radius: 10px; box-shadow: var(--shadow); }
   .artist { color: var(--text-muted); margin: 0 0 0.25rem; }
   .meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem; }
   .desc { margin: 0.5rem 0; }
