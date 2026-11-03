@@ -30,4 +30,3 @@ jobs:
           curl -sf http://localhost:5000/api/health
           curl -sf http://localhost:8080/ >/dev/null
           docker compose down -v
-PY
