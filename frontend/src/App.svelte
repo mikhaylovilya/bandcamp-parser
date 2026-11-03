@@ -158,15 +158,25 @@
 </main>
 
 <style>
-  main { max-width: 800px; margin: 0 auto; padding: 1rem; font-family: system-ui, sans-serif; text-align: left; }
-  .link { background: none; border: none; color: #1a0dab; cursor: pointer; padding: 0; text-align: left; }
-  .input { display: flex; gap: .5rem; margin-bottom: 1rem; }
-  input { flex: 1; padding: .5rem; }
-  .card { border: 1px solid #ddd; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
-  .card img { max-width: 200px; }
-  .error { color: #c00; }
-  .errors { color: #a60; }
-  .tracks { margin: .5rem 0; padding-left: 1.5rem; text-align: left; list-style: decimal; }
+  main { max-width: 100%; }
+  h1 { font-size: 1.8rem; margin: 0 0 1rem; }
+  h2 { font-size: 1.25rem; margin: 1.25rem 0 0.5rem; }
+  h3 { font-size: 1rem; margin: 0.75rem 0 0.25rem; }
+  .link { background: none; border: none; color: var(--accent); cursor: pointer; padding: 0; text-align: left; font: inherit; }
+  .link:hover { color: var(--accent-hover); text-decoration: underline; }
+  .input { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .input input { flex: 1 1 260px; }
+  .card { background: var(--surface); border: 1px solid var(--border); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; box-shadow: var(--shadow); }
+  .card img { max-width: 200px; border-radius: 8px; margin: 0.5rem 0; }
+  .artist { color: var(--text-muted); margin: 0 0 0.25rem; }
+  .meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem; }
+  .desc { margin: 0.5rem 0; }
+  .about { margin: 0.5rem 0; color: var(--text-muted); font-style: italic; }
+  .lyrics { white-space: pre-wrap; background: var(--code-bg); padding: 0.75rem; border-radius: 8px; font-family: var(--mono); font-size: 0.9rem; }
+  .error { color: var(--danger); }
+  .errors { color: #b45309; }
+  .comments ul { padding-left: 1.25rem; }
+  .tracks { margin: 0.5rem 0; padding-left: 1.5rem; text-align: left; list-style: decimal; }
   .reports ul { list-style: none; padding: 0; }
-  .reports li { display: flex; justify-content: space-between; padding: .25rem 0; }
+  .reports li { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.4rem 0; border-bottom: 1px solid var(--border); }
 </style>
