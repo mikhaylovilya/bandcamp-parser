@@ -9,6 +9,7 @@ class TrackSchema(Schema):
     track_num = fields.Integer(allow_none=True)
     title = fields.String(allow_none=True)
     duration = fields.Float(allow_none=True)
+    lyrics = fields.String(allow_none=True)
 
 
 class ReleaseSchema(Schema):
@@ -21,7 +22,10 @@ class ReleaseSchema(Schema):
     price = fields.Float(allow_none=True)
     currency = fields.String(allow_none=True)
     about = fields.String(allow_none=True)
+    description = fields.String(allow_none=True)
     credits = fields.String(allow_none=True)
+    lyrics = fields.String(allow_none=True)
+    comments = fields.List(fields.Dict())
     tracks = fields.List(fields.Nested(TrackSchema))
     errors = fields.List(fields.String())
 

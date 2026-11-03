@@ -82,6 +82,15 @@
       <h2>{release.title}</h2>
       <p class="artist">{release.artist}</p>
       <p class="meta">{release.type} · {release.release_date || '—'} · {release.price != null ? release.price + ' ' + (release.currency || '') : '—'}</p>
+      {#if release.description}
+        <p class="desc">{release.description}</p>
+      {/if}
+      {#if release.about}
+        <p class="about">{release.about}</p>
+      {/if}
+      {#if release.lyrics}
+        <pre class="lyrics">{release.lyrics}</pre>
+      {/if}
       {#if release.cover_image_url}
         <img src={release.cover_image_url} alt={release.title} />
       {/if}
@@ -91,6 +100,16 @@
             <li>{t.title} {t.duration ? '(' + Math.round(t.duration) + 's)' : ''}</li>
           {/each}
         </ol>
+      {/if}
+      {#if release.comments && release.comments.length}
+        <div class="comments">
+          <h3>Top comments</h3>
+          <ul>
+            {#each release.comments as c}
+              <li><strong>{c.author || 'anon'}</strong>: {c.text}</li>
+            {/each}
+          </ul>
+        </div>
       {/if}
       {#if release.errors && release.errors.length}
         <div class="errors">

@@ -63,6 +63,41 @@ def _meta_name(soup: BeautifulSoup, name: str) -> Optional[str]:
     return None
 
 
+
+
+def _parse_comments(soup: BeautifulSoup) -> list[dict]:
+    comments: list[dict] = []
+    for el in soup.select(".comment"):
+        contents = el.select_one(".comment-contents")
+        author = el.select_one(".comment-author")
+        text = (contents.get_text(strip=True) if contents else el.get_text(strip=True))
+        if not text:
+            continue
+        comments.append({
+            "author": author.get_text(strip=True) if author else None,
+            "text": text,
+        })
+    # de-duplicate identical entries
+    seen = set()
+    unique = []
+    for c in comments:
+        key = (c.get("author"), c.get("text"))
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(c)
+    return unique[:20]
+
+
+def _html_lyrics(soup: BeautifulSoup) -> str | None:
+    for sel in (".lyrics", "#lyrics", ".track-lyrics", "[data-lyrics]"):
+        el = soup.select_one(sel)
+        if el:
+            txt = el.get_text("\n", strip=True)
+            if txt:
+                return txt
+    return None
+
 def _image_url_from_art_id(art_id: Any) -> Optional[str]:
     if not art_id:
         return None
@@ -173,12 +208,14 @@ def parse_release(html_text: str, url: str = "") -> dict:
                 "track_num": t.get("track_num"),
                 "title": t.get("title"),
                 "duration": t.get("duration"),
+                "lyrics": t.get("lyrics"),
             })
     elif normalized_type == "track":
         tracks.append({
             "track_num": current.get("track_number"),
             "title": current.get("title"),
             "duration": None,
+            "lyrics": current.get("lyrics"),
         })
     # validate track titles
     for tr in tracks:
@@ -187,6 +224,30 @@ def parse_release(html_text: str, url: str = "") -> dict:
 
     if normalized_type == "album" and not tracks:
         errors.append("track list could not be parsed")
+
+    # --- description ---
+    description = about
+    if not description:
+        description = _og(soup, "og:description")
+    if description and description.startswith(" from the album "):
+        description = None
+
+    # --- lyrics ---
+    lyrics = current.get("lyrics")
+    if lyrics is None and isinstance(current.get("album"), dict):
+        lyrics = current["album"].get("lyrics")
+    if not lyrics:
+        # trackinfo lyrics (first track with lyrics)
+        if isinstance(trackinfo, list):
+            for t in trackinfo:
+                if isinstance(t, dict) and t.get("lyrics"):
+                    lyrics = t.get("lyrics")
+                    break
+    if not lyrics:
+        lyrics = _html_lyrics(soup)
+
+    # --- comments ---
+    comments = _parse_comments(soup)
 
     # --- url canonical ---
     canonical_url = url
@@ -204,7 +265,10 @@ def parse_release(html_text: str, url: str = "") -> dict:
         "price": price,
         "currency": currency,
         "about": about,
+        "description": description,
         "credits": credits,
+        "lyrics": lyrics,
+        "comments": comments,
         "tracks": tracks,
         "errors": errors,
     }
