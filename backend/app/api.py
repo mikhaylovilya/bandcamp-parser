@@ -94,6 +94,19 @@ def list_reports():
         session.close()
 
 
+@blp.route("/reports/<int:report_id>", methods=["GET"])
+@blp.response(200, ReportSchema)
+def get_report(report_id):
+    session = _session()
+    try:
+        report = session.get(Report, report_id)
+        if report is None:
+            abort(404, message="report not found")
+        return report.to_dict()
+    finally:
+        session.close()
+
+
 @blp.route("/reports/<int:report_id>", methods=["DELETE"])
 @blp.response(200, MessageSchema)
 def delete_report(report_id):

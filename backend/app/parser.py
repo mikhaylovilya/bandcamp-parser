@@ -171,7 +171,12 @@ def parse_release(html_text: str, url: str = "") -> dict:
     # --- release date ---
     release_date = current.get("release_date") or current.get("album_release_date")
     if not release_date and isinstance(current.get("album"), dict):
-        release_date = current["album"].get("release_date")
+        release_date = current["album"].get("release_date") or current["album"].get("album_release_date")
+    if not release_date:
+        release_date = current.get("publish_date")
+    if not release_date:
+        # top-level fallbacks
+        release_date = tralbum_obj.get("album_release_date") or tralbum_obj.get("release_date")
     if not release_date:
         errors.append("release date could not be parsed")
 
@@ -230,6 +235,8 @@ def parse_release(html_text: str, url: str = "") -> dict:
     if not description:
         description = _og(soup, "og:description")
     if description and description.startswith(" from the album "):
+        description = None
+    if description and about and description.strip() == about.strip():
         description = None
 
     # --- lyrics ---

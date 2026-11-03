@@ -49,6 +49,22 @@ def test_delete_missing_report(client):
     assert r.status_code == 404
 
 
+def test_get_report(client, album_html):
+    with patch("app.api.fetch_html", return_value=album_html):
+        client.post("/api/parse", json={"url": "https://radiohead.bandcamp.com/album/in-rainbows"})
+    reports = client.get("/api/reports").get_json()["reports"]
+    rid = reports[0]["id"]
+    r = client.get(f"/api/reports/{rid}")
+    assert r.status_code == 200
+    assert r.get_json()["id"] == rid
+    assert r.get_json()["data"]["title"] == "In Rainbows"
+
+
+def test_get_missing_report(client):
+    r = client.get("/api/reports/9999")
+    assert r.status_code == 404
+
+
 def test_swagger(client):
     r = client.get("/swagger-ui")
     assert r.status_code == 200

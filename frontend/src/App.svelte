@@ -7,6 +7,7 @@
   let release = null
   let reports = []
   let reportsLoading = false
+  let selectedReport = null
 
   async function loadReports() {
     reportsLoading = true
@@ -46,6 +47,19 @@
       error = e.message
     } finally {
       loading = false
+    }
+  }
+
+  async function viewReport(id) {
+    error = ''
+    try {
+      const res = await fetch(`/api/reports/${id}`)
+      if (!res.ok) throw new Error('Failed to load report')
+      const data = await res.json()
+      selectedReport = data
+      release = data.data || data
+    } catch (e) {
+      error = e.message
     }
   }
 
@@ -134,7 +148,7 @@
       <ul>
         {#each reports as r (r.id)}
           <li>
-            <span>{r.title || r.url} — {r.artist || ''}</span>
+            <button class="link" on:click={() => viewReport(r.id)}>{r.title || r.url} — {r.artist || ''}</button>
             <button on:click={() => removeReport(r.id)}>Delete</button>
           </li>
         {/each}
@@ -144,14 +158,15 @@
 </main>
 
 <style>
-  main { max-width: 800px; margin: 0 auto; padding: 1rem; font-family: system-ui, sans-serif; }
+  main { max-width: 800px; margin: 0 auto; padding: 1rem; font-family: system-ui, sans-serif; text-align: left; }
+  .link { background: none; border: none; color: #1a0dab; cursor: pointer; padding: 0; text-align: left; }
   .input { display: flex; gap: .5rem; margin-bottom: 1rem; }
   input { flex: 1; padding: .5rem; }
   .card { border: 1px solid #ddd; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
   .card img { max-width: 200px; }
   .error { color: #c00; }
   .errors { color: #a60; }
-  .tracks { margin: .5rem 0; }
+  .tracks { margin: .5rem 0; padding-left: 1.5rem; text-align: left; list-style: decimal; }
   .reports ul { list-style: none; padding: 0; }
   .reports li { display: flex; justify-content: space-between; padding: .25rem 0; }
 </style>
