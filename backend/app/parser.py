@@ -10,6 +10,7 @@ from __future__ import annotations
 import html as html_lib
 import json
 import re
+import time
 from dataclasses import dataclass, field
 from typing import Any, Optional
 from urllib.parse import urlparse
@@ -283,10 +284,28 @@ def parse_release(html_text: str, url: str = "") -> dict:
 
 
 def fetch_html(url: str, timeout: int = 20) -> str:
-    """Fetch a bandcamp page. Separated for testability/mocking."""
+    """Fetch a bandcamp page. Separated for testability/mocking.
+
+    Waits on the shared rate limiter before each request so repeated parses
+    do not hit Bandcamp faster than ``BANDCAMP_MIN_INTERVAL`` seconds.
+    """
     import requests
 
-    resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
+    from .ratelimit import limiter
+
+    headers = {"User-Agent": "Mozilla/5.0"}
+    limiter.wait()
+    resp = requests.get(url, headers=headers, timeout=timeout)
+    if resp.status_code == 429:
+        retry_after = resp.headers.get("Retry-After")
+        try:
+            delay = float(retry_after) if retry_after else limiter.interval()
+        except ValueError:
+            delay = limiter.interval()
+        delay = min(max(delay, 1.0), 30.0)
+        time.sleep(delay)
+        limiter.wait()
+        resp = requests.get(url, headers=headers, timeout=timeout)
     resp.raise_for_status()
     return resp.text
 

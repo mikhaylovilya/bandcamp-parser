@@ -11,6 +11,7 @@
 
 - `backend/app/parser.py` — чистый HTML-парсер, без сети. `parse_release(html, url)` возвращает словарь с полями и списком `errors`.
 - `backend/app/api.py` — Flask blueprint. `fetch_html` — единственное обращение к сети, в тестах мокается.
+- `backend/app/ratelimit.py` — пауза между запросами к Bandcamp (`BANDCAMP_MIN_INTERVAL`, по умолчанию 2 с). Метка времени в файле под lock, чтобы воркеры gunicorn делили один лимит на IP. При ответе 429 запрос повторяется один раз, не дольше 30 с.
 - `backend/app/models.py` — таблица `Report` хранит URL, заголовок, артиста, тип и полный распарсенный JSON.
 - Фронтенд обращается к относительному `/api`, который nginx проксирует к бэкенду в продакшене и Vite — в dev-режиме.
 

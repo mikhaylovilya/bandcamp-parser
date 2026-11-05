@@ -7,6 +7,8 @@ services:
       - bandcamp_data:/data
     environment:
       - DATABASE_URL=sqlite:////data/bandcamp.db
+      - BANDCAMP_MIN_INTERVAL=2
+      - BANDCAMP_RATE_LIMIT_PATH=/data/bandcamp-rate
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')"]
       interval: 10s
