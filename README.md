@@ -1,28 +1,30 @@
 # bandcamp-parser
 
-Single-page web app that parses Bandcamp release pages (albums/tracks) and stores reports.
+Одностраничное веб-приложение, которое собирает данные с страниц релизов Bandcamp (альбомы/треки) и сохраняет отчёты.
 
-Stack: Flask + flasgger (Swagger) backend, Svelte frontend, SQLite.
+Стек: бэкенд Flask + flask-smorest (Swagger), фронтенд Svelte, база данных SQLite.
 
-## Run with docker compose
+## Запуск через docker compose
 
 ```bash
 docker compose up --build
 ```
 
-Frontend: http://localhost:8080
-Backend API: http://localhost:5000/api
+Фронтенд: http://localhost:8080
+API бэкенда: http://localhost:5000/api
 Swagger UI: http://localhost:5000/swagger-ui
 
 ## API
 
-- `POST /api/parse` body `{ "url": "https://..." }` -> parsed release + saves report
-- `GET /api/reports` -> list saved reports
-- `DELETE /api/reports/{id}` -> delete report
+- `POST /api/parse` body `{ "url": "https://..." }` -> распарсенный релиз + сохранение отчёта
+- `GET /api/reports` -> список сохранённых отчётов
+- `GET /api/reports/{id}` -> конкретный отчёт
+- `DELETE /api/reports/{id}` -> удалить отчёт
 
-## Development
+## Разработка
 
-Backend:
+Бэкенд:
+
 ```bash
 cd backend
 python -m venv .venv && source .venv/bin/activate
@@ -30,7 +32,8 @@ pip install -r requirements.txt
 pytest
 ```
 
-Frontend:
+Фронтенд:
+
 ```bash
 cd frontend
 npm install
